@@ -2,6 +2,7 @@
 using System.Linq;
 using TaskProximity.Data;
 using TaskProximity.Models;
+using TaskProximity.Services;
 using BCryptNet = BCrypt.Net.BCrypt;
 
 namespace TaskProximity.Controllers
@@ -11,10 +12,12 @@ namespace TaskProximity.Controllers
     public class UsersController : ControllerBase
     {
         private readonly TaskProximityDbContext _context;
+        private readonly JwtService _jwtService;
 
-        public UsersController(TaskProximityDbContext context)
+        public UsersController(TaskProximityDbContext context, JwtService jwtService)
         {
             _context = context;
+            _jwtService = jwtService;
         }
 
         [HttpPost("register")]
@@ -68,6 +71,24 @@ namespace TaskProximity.Controllers
             string hashedPassword = BCryptNet.HashPassword(password, salt);
 
             return hashedPassword;
+        }
+
+        [HttpPost("login")]
+        public IActionResult Login(User user)
+        {
+            var existingUser = _context.Users.SingleOrDefault(u => u.Username == user.Username);
+
+            if (existingUser == null || !BCryptNet.Verify(user.Password, existingUser.Password))
+            {
+                ModelState.AddModelError("Authentication", "Invalid username or password.");
+                return BadRequest(ModelState);
+            }
+
+            // Generate a JWT token
+            var token = _jwtService.GenerateJwtToken(existingUser);
+
+            // Return the token in the response
+            return Ok(new { Token = token });
         }
     }
 }
