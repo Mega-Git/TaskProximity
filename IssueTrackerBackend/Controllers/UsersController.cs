@@ -1,9 +1,8 @@
-﻿using TaskProximity.Models;
-using Microsoft.AspNetCore.Mvc;
-using System;
-using System.Collections.Generic;
+﻿using Microsoft.AspNetCore.Mvc;
 using System.Linq;
-using System.Threading.Tasks;
+using TaskProximity.Data;
+using TaskProximity.Models;
+using BCryptNet = BCrypt.Net.BCrypt;
 
 namespace TaskProximity.Controllers
 {
@@ -11,6 +10,13 @@ namespace TaskProximity.Controllers
     [Route("api/[controller]")]
     public class UsersController : ControllerBase
     {
+        private readonly TaskProximityDbContext _context;
+
+        public UsersController(TaskProximityDbContext context)
+        {
+            _context = context;
+        }
+
         [HttpPost("register")]
         public IActionResult Register(User user)
         {
@@ -20,21 +26,48 @@ namespace TaskProximity.Controllers
                 return BadRequest(ModelState);
             }
 
-            // TODO: Save the user to the database or perform other registration-related operations
+            // Check if the username or email already exists
+            if (_context.Users.Any(u => u.Username == user.Username))
+            {
+                ModelState.AddModelError("Username", "Username is already taken.");
+                return BadRequest(ModelState);
+            }
+
+            if (_context.Users.Any(u => u.Email == user.Email))
+            {
+                ModelState.AddModelError("Email", "Email is already taken.");
+                return BadRequest(ModelState);
+            }
+
+            // Hash the password
+            string hashedPassword = HashPassword(user.Password);
+
+            // Create a new User object with the hashed password
+            var newUser = new User
+            {
+                Username = user.Username,
+                Password = hashedPassword,
+                Email = user.Email,
+                Role = user.Role
+            };
+
+            // Save the new user to the database
+            _context.Users.Add(newUser);
+            _context.SaveChanges();
 
             // Return a success response
             return Ok(new { Message = "Registration successful" });
         }
 
-        [HttpPost("login")]
-        public IActionResult Login(User user)
+        private string HashPassword(string password)
         {
-            // TODO: Implement user authentication logic
-            // Compare the provided username/password with the stored values in the database
-            // Generate and return a token upon successful authentication
+            // Generate a random salt for the password
+            string salt = BCryptNet.GenerateSalt();
 
-            // Placeholder response for demonstration purposes
-            return Ok(new { Message = "Login successful" });
+            // Hash the password using BCrypt with the generated salt
+            string hashedPassword = BCryptNet.HashPassword(password, salt);
+
+            return hashedPassword;
         }
     }
 }
