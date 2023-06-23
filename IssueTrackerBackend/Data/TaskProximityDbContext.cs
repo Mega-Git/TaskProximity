@@ -13,7 +13,8 @@ namespace TaskProximity.Data
         {
         }
 
-        public DbSet<User> Users { get; set; } // Add DbSet properties for your other entities/models
+        public DbSet<User> Users { get; set; }
+        public DbSet<Project> Projects { get; set; } // Add DbSet properties for your other entities/models
 
         // Additional DbSet properties for other entities can be added here
     }
