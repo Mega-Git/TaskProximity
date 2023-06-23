@@ -1,11 +1,11 @@
-﻿using IssueTrackerBackend.Models;
+﻿using TaskProximity.Models;
 using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace IssueTrackerBackend.Controllers
+namespace TaskProximity.Controllers
 {
     [ApiController]
     [Route("api/[controller]")]

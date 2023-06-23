@@ -1,6 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore.Migrations;
 
-namespace IssueTrackerBackend.Migrations
+namespace TaskProximity.Migrations
 {
     public partial class InitialCreate : Migration
     {

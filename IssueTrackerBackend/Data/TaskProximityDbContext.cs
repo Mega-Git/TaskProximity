@@ -1,11 +1,11 @@
-﻿using IssueTrackerBackend.Models;
+﻿using TaskProximity.Models;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace IssueTrackerBackend.Data
+namespace TaskProximity.Data
 {
     public class TaskProximityDbContext : DbContext
     {

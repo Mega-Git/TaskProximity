@@ -1,4 +1,4 @@
-using IssueTrackerBackend.Data;
+using TaskProximity.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -7,7 +7,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.OpenApi.Models;
 
-namespace IssueTrackerBackend
+namespace TaskProximity
 {
     public class Startup
     {
@@ -24,7 +24,7 @@ namespace IssueTrackerBackend
             services.AddControllers();
             services.AddSwaggerGen(c =>
             {
-                c.SwaggerDoc("v1", new OpenApiInfo { Title = "IssueTrackerBackend", Version = "v1" });
+                c.SwaggerDoc("v1", new OpenApiInfo { Title = "TaskProximity", Version = "v1" });
             });
             services.AddDbContext<TaskProximityDbContext>(options =>
             {
@@ -39,7 +39,7 @@ namespace IssueTrackerBackend
             {
                 app.UseDeveloperExceptionPage();
                 app.UseSwagger();
-                app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "IssueTrackerBackend v1"));
+                app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "TaskProximity v1"));
             }
 
             app.UseHttpsRedirection();
