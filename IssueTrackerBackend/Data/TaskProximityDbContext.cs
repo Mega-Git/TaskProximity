@@ -1,9 +1,5 @@
-﻿using TaskProximity.Models;
-using Microsoft.EntityFrameworkCore;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+﻿using Microsoft.EntityFrameworkCore;
+using TaskProximity.Models;
 
 namespace TaskProximity.Data
 {
@@ -14,8 +10,24 @@ namespace TaskProximity.Data
         }
 
         public DbSet<User> Users { get; set; }
-        public DbSet<Project> Projects { get; set; } // Add DbSet properties for your other entities/models
+        public DbSet<Project> Projects { get; set; }
 
-        // Additional DbSet properties for other entities can be added here
+        protected override void OnModelCreating(ModelBuilder modelBuilder)
+        {
+            base.OnModelCreating(modelBuilder);
+
+            modelBuilder.Entity<UserProject>()
+                .HasKey(up => new { up.UserId, up.ProjectId });
+
+            modelBuilder.Entity<UserProject>()
+                .HasOne(up => up.User)
+                .WithMany(u => u.UserProjects)
+                .HasForeignKey(up => up.UserId);
+
+            modelBuilder.Entity<UserProject>()
+                .HasOne(up => up.Project)
+                .WithMany(p => p.UserProjects)
+                .HasForeignKey(up => up.ProjectId);
+        }
     }
 }

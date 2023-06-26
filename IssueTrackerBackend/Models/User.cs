@@ -22,5 +22,7 @@ namespace TaskProximity.Models
 
         [Required]
         public string Role { get; set; }
+
+        public ICollection<UserProject> UserProjects { get; set; }
     }
 }

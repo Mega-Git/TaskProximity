@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 
 namespace TaskProximity.Models
 {
@@ -11,5 +12,6 @@ namespace TaskProximity.Models
         public DateTime EndDate { get; set; }
         public string CreatedBy { get; set; }
         public string Status { get; set; }
+        public ICollection<UserProject> UserProjects { get; set; }
     }
 }

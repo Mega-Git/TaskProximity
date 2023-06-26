@@ -106,5 +106,51 @@ namespace TaskProximity.Controllers
         {
             return _context.Projects.Any(p => p.Id == id);
         }
+
+        // POST: api/projects/{projectId}/users/{userId}
+        [HttpPost("{projectId}/users/{userId}")]
+        public async Task<ActionResult> AssignUserToProject(int projectId, int userId)
+        {
+            var project = await _context.Projects.FindAsync(projectId);
+            var user = await _context.Users.FindAsync(userId);
+
+            if (project == null || user == null)
+            {
+                return NotFound();
+            }
+
+            project.UserProjects.Add(new UserProject
+            {
+                UserId = userId,
+                ProjectId = projectId
+            });
+
+            await _context.SaveChangesAsync();
+
+            return NoContent();
+        }
+
+        // DELETE: api/projects/{projectId}/users/{userId}
+        [HttpDelete("{projectId}/users/{userId}")]
+        public async Task<ActionResult> RemoveUserFromProject(int projectId, int userId)
+        {
+            var project = await _context.Projects.FindAsync(projectId);
+            var user = await _context.Users.FindAsync(userId);
+
+            if (project == null || user == null)
+            {
+                return NotFound();
+            }
+
+            var userProject = project.UserProjects.FirstOrDefault(up => up.UserId == userId && up.ProjectId == projectId);
+
+            if (userProject != null)
+            {
+                project.UserProjects.Remove(userProject);
+                await _context.SaveChangesAsync();
+            }
+
+            return NoContent();
+        }
     }
 }
