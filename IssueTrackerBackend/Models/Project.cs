@@ -13,5 +13,6 @@ namespace TaskProximity.Models
         public string CreatedBy { get; set; }
         public string Status { get; set; }
         public ICollection<UserProject> UserProjects { get; set; }
+        public ICollection<Comment> Comments { get; set; }
     }
 }

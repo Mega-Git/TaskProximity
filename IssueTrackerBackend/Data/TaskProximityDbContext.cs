@@ -14,6 +14,7 @@ namespace TaskProximity.Data
         public DbSet<Notification> Notifications { get; set; }
         public DbSet<EmailNotification> EmailNotifications { get; set; }
         public DbSet<UserProject> UserProjects { get; set; }
+        public DbSet<Comment> Comments { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
