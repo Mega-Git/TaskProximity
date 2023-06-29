@@ -5,6 +5,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using TaskProximity.Data;
 using TaskProximity.Models;
+using TaskProximity.Services;
 
 namespace TaskProximity.Controllers
 {
@@ -13,10 +14,18 @@ namespace TaskProximity.Controllers
     public class ProjectsController : ControllerBase
     {
         private readonly TaskProximityDbContext _context;
+        private readonly INotificationService _notificationService;
+        private readonly IUserService _userService;
+        private readonly IEmailNotificationService _emailNotificationService;
+        private readonly IProjectService _projectService;
 
-        public ProjectsController(TaskProximityDbContext context)
+        public ProjectsController(TaskProximityDbContext context, INotificationService notificationService, IUserService userService, IEmailNotificationService emailNotificationService, IProjectService projectService)
         {
             _context = context;
+            _notificationService = notificationService;
+            _userService = userService;
+            _emailNotificationService = emailNotificationService;
+            _projectService = projectService;
         }
 
         // GET: api/projects
@@ -83,7 +92,26 @@ namespace TaskProximity.Controllers
                 }
             }
 
-            return NoContent();
+            // Get the list of user IDs assigned to the project
+            var assignedUserIds = await _projectService.GetAssignedUserIds(project.Id);
+
+            // Trigger in-app notifications
+            var message = $"The project {project.Id} has been updated.";
+            foreach (var userId in assignedUserIds)
+            {
+                await _notificationService.CreateNotification(userId, message);
+            }
+
+            // Trigger email notifications
+            var subject = "Project Update";
+            var body = $"The project {project.Name} has been updated.";
+            foreach (var userId in assignedUserIds)
+            {
+                var user = await _userService.GetUserById(userId);
+                await _emailNotificationService.SendEmailNotification(user.Email, subject, body);
+            }
+
+            return Ok();
         }
 
         // DELETE: api/projects/5
@@ -126,8 +154,18 @@ namespace TaskProximity.Controllers
             });
 
             await _context.SaveChangesAsync();
+            // Trigger in-app notification
+            var message = $"You have been assigned to the project: {projectId}";
+            await _notificationService.CreateNotification(userId, message);
 
-            return NoContent();
+            // Trigger email notification
+            user = await _userService.GetUserById(userId);
+            project = await _projectService.GetProjectById(projectId);
+            var subject = "Project Assignment";
+            var body = $"You have been assigned to the project: {project.Name}";
+            await _emailNotificationService.SendEmailNotification(user.Email, subject, body);
+
+            return Ok();
         }
 
         // DELETE: api/projects/{projectId}/users/{userId}
@@ -150,7 +188,18 @@ namespace TaskProximity.Controllers
                 await _context.SaveChangesAsync();
             }
 
-            return NoContent();
+            // Trigger in-app notification
+            var message = $"You have been unassigned from the project: {projectId}";
+            await _notificationService.CreateNotification(userId, message);
+
+            // Trigger email notification
+            user = await _userService.GetUserById(userId);
+            project = await _projectService.GetProjectById(projectId);
+            var subject = "Project Unassignment";
+            var body = $"You have been unassigned from the project: {project.Name}";
+            await _emailNotificationService.SendEmailNotification(user.Email, subject, body);
+
+            return Ok();
         }
     }
 }
