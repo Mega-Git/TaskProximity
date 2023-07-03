@@ -17,6 +17,7 @@ namespace TaskProximity.Data
         public DbSet<Comment> Comments { get; set; }
         public DbSet<Team> Teams { get; set; }
         public DbSet<UserTeam> UserTeams { get; set; }
+        public DbSet<Invitation> Invitations { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -34,6 +35,26 @@ namespace TaskProximity.Data
                 .HasOne(up => up.Project)
                 .WithMany(p => p.UserProjects)
                 .HasForeignKey(up => up.ProjectId);
+
+            modelBuilder.Entity<UserTeam>()
+           .HasOne(ut => ut.Team)
+           .WithMany(t => t.UserTeams)
+           .HasForeignKey(ut => ut.TeamId);
+
+            modelBuilder.Entity<UserTeam>()
+                .HasOne(ut => ut.User)
+                .WithMany(u => u.UserTeams)
+                .HasForeignKey(ut => ut.UserId);
+
+            modelBuilder.Entity<Invitation>()
+                .HasOne(i => i.Team)
+                .WithMany(t => t.Invitations)
+                .HasForeignKey(i => i.TeamId);
+
+            modelBuilder.Entity<Invitation>()
+                .HasOne(i => i.InvitedUser)
+                .WithMany(u => u.Invitations)
+                .HasForeignKey(i => i.InvitedUserId);
         }
     }
 }

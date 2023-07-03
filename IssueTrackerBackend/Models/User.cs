@@ -24,5 +24,7 @@ namespace TaskProximity.Models
         public string Role { get; set; }
 
         public ICollection<UserProject> UserProjects { get; set; }
+        public List<UserTeam> UserTeams { get; set; }
+        public List<Invitation> Invitations { get; set; }
     }
 }
