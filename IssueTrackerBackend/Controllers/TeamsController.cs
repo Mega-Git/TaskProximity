@@ -122,7 +122,7 @@ namespace TaskProximity.Controllers
                 return NotFound();
             }
 
-            if (await IsUserInTeam(user.Id, teamId))
+            if (await IsUserInTeam(user.UserId, teamId))
             {
                 return BadRequest("User is already a member of the team.");
             }
@@ -130,7 +130,7 @@ namespace TaskProximity.Controllers
             var invitation = new Invitation
             {
                 TeamId = teamId,
-                UserId = user.Id
+                UserId = user.UserId
             };
 
             _context.Invitations.Add(invitation);

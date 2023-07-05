@@ -29,32 +29,41 @@ namespace TaskProximity.Data
             modelBuilder.Entity<UserProject>()
                 .HasOne(up => up.User)
                 .WithMany(u => u.UserProjects)
-                .HasForeignKey(up => up.UserId);
+                .HasForeignKey(up => up.UserId)
+                .OnDelete(DeleteBehavior.Restrict);
 
             modelBuilder.Entity<UserProject>()
                 .HasOne(up => up.Project)
                 .WithMany(p => p.UserProjects)
-                .HasForeignKey(up => up.ProjectId);
+                .HasForeignKey(up => up.ProjectId)
+                .OnDelete(DeleteBehavior.Restrict);
 
             modelBuilder.Entity<UserTeam>()
-           .HasOne(ut => ut.Team)
-           .WithMany(t => t.UserTeams)
-           .HasForeignKey(ut => ut.TeamId);
+               .HasOne(ut => ut.Team)
+               .WithMany(t => t.UserTeams)
+               .HasForeignKey(ut => ut.TeamId)
+               .OnDelete(DeleteBehavior.Restrict);
 
             modelBuilder.Entity<UserTeam>()
                 .HasOne(ut => ut.User)
                 .WithMany(u => u.UserTeams)
-                .HasForeignKey(ut => ut.UserId);
+                .HasForeignKey(ut => ut.UserId)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            modelBuilder.Entity<Invitation>()
+                .HasKey(i => i.InvitationId);
 
             modelBuilder.Entity<Invitation>()
                 .HasOne(i => i.Team)
                 .WithMany(t => t.Invitations)
-                .HasForeignKey(i => i.TeamId);
+                .HasForeignKey(i => i.TeamId)
+                .OnDelete(DeleteBehavior.Restrict);
 
             modelBuilder.Entity<Invitation>()
                 .HasOne(i => i.InvitedUser)
                 .WithMany(u => u.Invitations)
-                .HasForeignKey(i => i.InvitedUserId);
+                .HasForeignKey(i => i.InvitedUserId)
+                .OnDelete(DeleteBehavior.Restrict);
         }
     }
 }
